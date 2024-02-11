@@ -1,0 +1,18 @@
+Serialization:
+    Serialization in Java allows us to convert an Object to stream that we can send over the network or save it as file or store in DB for later usage. Deserialization is the process of converting Object stream to actual Java Object to be used in our program. Serialization in Java seems very easy to use at first but it comes with some trivial security and integrity issues
+    Employee java bean with some properties and getter-setter methods. If you want an object property to be not serialized to stream, you can use transient keyword like I have done with salary variable. Now suppose we want to write our objects to file and then deserialize it from the same file. So we need utility methods that will use ObjectInputStream and ObjectOutputStream for serialization purposes.
+    Notice that the method arguments work with Object in SerializationUtil class that is the base class of any java object. It’s written in this way to be generic in nature.
+    When we run SerializationTest class -> Since salary is a transient variable, it’s value was not saved to file and hence not retrieved in the new object. Similarly static variable values are also not serialized since they belongs to class and not object.
+
+Class Refactoring with Serialization and serialVersionUID
+    Serialization in java permits some changes in the java class if they can be ignored. Some of the changes in class that will not affect the deserialization process are:
+        Adding new variables to the class
+        Changing the variables from transient to non-transient, for serialization it’s like having a new field.
+        Changing the variable from static to non-static, for serialization it’s like having a new field.
+    But for all these changes to work, the java class should have serialVersionUID defined for the class. Let’s write a test class just for deserialization of the already serialized file (DeserializationTest) from previous test class.
+    Now uncomment the “password” variable and it’s getter-setter methods from Employee class and run it. You will get exception; java.io.InvalidClassException: com.java.ashish.serialization.Employee; local class incompatible: stream classdesc serialVersionUID = -6470090944414208496, local class serialVersionUID = -6234198221249432383
+    The reason is clear that serialVersionUID of the previous class and new class are different. Actually if the class doesn’t define serialVersionUID, it’s getting calculated automatically and assigned to the class. Java uses class variables, methods, class name, package etc to generate this unique long number. If you are working with any IDE, you will automatically get a warning that “The serializable class Employee does not declare a static final serialVersionUID field of type long”. We can use java utility “serialver” to generate the class serialVersionUID, for Employee class we can run it with below command.
+
+    SerializationExample/bin$serialver -classpath . com.java.ashish.serialization.Employee
+    Note that it’s not required that the serial version is generated from this program itself, we can assign this value as we want. It just need to be there to let deserialization process know that the new class is the new version of the same class and should be deserialized of possible. For example, uncomment only the serialVersionUID field from the Employee class and run SerializationTest program. Now uncomment the password field from Employee class and run the DeserializationTest program and you will see that the object stream is deserialized successfully because the change in Employee class is compatible with serialization process.
+
