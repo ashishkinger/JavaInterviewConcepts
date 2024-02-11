@@ -1,0 +1,19 @@
+Immutable:
+    An object is immutable when its state doesn’t change after it has been initialized. For example, String is an immutable class and, once instantiated, the value of a String object never changes.
+    Because an immutable object can’t be updated, programs need to create a new object for every change of state. However, immutable objects also have the following benefits:
+
+        An immutable class is good for caching purposes because you don’t have to worry about the value changes.
+        An immutable class is inherently thread-safe, so you don’t have to worry about thread safety in multi-threaded environments.
+
+Creating an Immutable Class in Java
+    To create an immutable class in Java, you need to follow these general principles:
+
+        Declare the class as final so it can’t be extended.
+        Make all of the fields private so that direct access is not allowed.
+        Don’t provide setter methods for variables.
+        Make all mutable fields final so that a field’s value can be assigned only once.
+        Initialize all fields using a constructor method performing deep copy.
+        Perform cloning of objects in the getter methods to return a copy rather than returning the actual object reference.
+
+What happens when you don’t use deep copy and cloning
+    You can make changes to the FinalClassExample.java file to show what happens when you use shallow copy instead of deep copy and return the object insetad of a copy. The object is no longer immutable and can be changed.
