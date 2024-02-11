@@ -6,7 +6,12 @@ public class SerializedSingletonWithReadResolve implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
-    private SerializedSingletonWithReadResolve(){}
+    private SerializedSingletonWithReadResolve(){
+        // Reflection wont break now
+        if (SingletonHelper.instance != null) {
+            throw new IllegalStateException("Singleton already constructed");
+        }
+    }
 
     private static class SingletonHelper{
         private static final SerializedSingletonWithReadResolve instance = new SerializedSingletonWithReadResolve();
