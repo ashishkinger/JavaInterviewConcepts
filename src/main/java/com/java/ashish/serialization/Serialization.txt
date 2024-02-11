@@ -16,3 +16,39 @@ Class Refactoring with Serialization and serialVersionUID
     SerializationExample/bin$serialver -classpath . com.java.ashish.serialization.Employee
     Note that it’s not required that the serial version is generated from this program itself, we can assign this value as we want. It just need to be there to let deserialization process know that the new class is the new version of the same class and should be deserialized of possible. For example, uncomment only the serialVersionUID field from the Employee class and run SerializationTest program. Now uncomment the password field from Employee class and run the DeserializationTest program and you will see that the object stream is deserialized successfully because the change in Employee class is compatible with serialization process.
 
+Externalization
+    Details mentioned in externalization.txt in externalization interface.
+
+    So which one is better to be used for serialization in java. Actually it’s better to use Serializable interface and by the time we reach at the end of article, you will know why.
+
+Java Serialization Methods
+    We have seen that serialization in java is automatic and all we need is implementing Serializable interface. The implementation is present in the ObjectInputStream and ObjectOutputStream classes. But what if we want to change the way we are saving data, for example we have some sensitive information in the object and before saving/retrieving we want to encrypt/decrypt it. That’s why there are four methods that we can provide in the class to change the serialization behavior. If these methods are present in the class, they are used for serialization purposes.
+
+    readObject(ObjectInputStream ois): If this method is present in the class, ObjectInputStream readObject() method will use this method for reading the object from stream.
+    writeObject(ObjectOutputStream oos): If this method is present in the class, ObjectOutputStream writeObject() method will use this method for writing the object to stream. One of the common usage is to obscure the object variables to maintain data integrity.
+    Object writeReplace(): If this method is present, then after serialization process this method is called and the object returned is serialized to the stream.
+    Object readResolve(): If this method is present, then after deserialization process, this method is called to return the final object to the caller program. One of the usage of this method is to implement Singleton pattern with Serialized classes. Read more at Serialization and Singleton.
+    Usually while implementing above methods, it’s kept as private so that subclasses can’t override them. They are meant for serialization purpose only and keeping them private avoids any security issue.
+
+Serialization with Inheritance
+    Sometimes we need to extend a class that doesn’t implement Serializable interface. If we rely on the automatic serialization behavior and the superclass has some state, then they will not be converted to stream and hence not retrieved later on. This is one place, where readObject() and writeObject() methods really help. By providing their implementation, we can save the super class state to the stream and then retrieve it later on. Let’s see this in action.
+
+    Writing a superclass.java which is not implementing serializable interface and subclass is serializing its data
+    Notice that order of writing and reading the extra data to the stream should be same. We can put some logic in reading and writing data to make it secure. Also notice that the class is implementing ObjectInputValidation interface. By implementing validateObject() method, we can put some business validations to make sure that the data integrity is not harmed. Let’s write a test class and see if we can retrieve the super class state from serialized data or not.
+    So in this way, we can serialize super class state even though it’s not implementing Serializable interface. This strategy comes handy when the super class is a third-party class that we can’t change.
+
+Serialization Proxy Pattern
+    Serialization in java comes with some serious pitfalls such as;
+
+    The class structure can’t be changed a lot without breaking the java serialization process. So even though we don’t need some variables later on, we need to keep them just for backward compatibility.
+    Serialization causes huge security risks, an attacker can change the stream sequence and cause harm to the system. For example, user role is serialized and an attacker change the stream value to make it admin and run malicious code.
+    Java Serialization Proxy pattern is a way to achieve greater security with Serialization. In this pattern, an inner private static class is used as a proxy class for serialization purpose. This class is designed in the way to maintain the state of the main class. This pattern is implemented by properly implementing readResolve() and writeReplace() methods. Let us first write a class which implements serialization proxy pattern and then we will analyze it for better understanding.
+
+    Both Data and DataProxy class should implement Serializable interface.
+    DataProxy should be able to maintain the state of Data object.
+    DataProxy is inner private static class, so that other classes can’t access it.
+    DataProxy should have a single constructor that takes Data as argument.
+    Data class should provide writeReplace() method returning DataProxy instance. So when Data object is serialized, the returned stream is of DataProxy class. However DataProxy class is not visible outside, so it can’t be used directly.
+    DataProxy class should implement readResolve() method returning Data object. So when Data class is deserialized, internally DataProxy is deserialized and when it’s readResolve() method is called, we get Data object.
+    Finally implement readObject() method in Data class and throw InvalidObjectException to avoid hackers attack trying to fabricate Data object stream and parse it.
+
