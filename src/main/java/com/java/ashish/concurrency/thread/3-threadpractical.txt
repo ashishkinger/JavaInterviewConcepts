@@ -1,0 +1,5 @@
+Thread Signaling
+    Java contains a set of features that enable thread to send signals to each other, and for threads to wait for such signals. For instance, a thread B might wait for a signal from thread A indicating that data is ready to be processed.
+
+    The thread signaling features in Java are implemented via the wait(), notify() and notifyAll() methods that are part of the the Object class which all Java classes extend.
+    
