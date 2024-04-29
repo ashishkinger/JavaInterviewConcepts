@@ -1,0 +1,47 @@
+Singleton :
+GOF creational pattern
+Only one instance of class
+Must have global access point to create the instance
+
+Singleton Pattern Principles :
+Singleton pattern restricts the instantiation of a class and ensures that only one instance of the class exists in the Java Virtual Machine.
+The singleton class must provide a global access point to get the instance of the class.
+Singleton pattern is used for logging, drivers objects, caching, and thread pool.
+Singleton design pattern is also used in other design patterns like Abstract Factory, Builder, Prototype, Facade, etc.
+Singleton design pattern is used in core Java classes also (for example, java.lang.Runtime, java.awt.Desktop).
+
+
+Java Singleton Pattern Implementation
+To implement a singleton pattern, we have different approaches, but all of them have the following common concepts.
+
+Private constructor to restrict instantiation of the class from other classes.
+Private static variable of the same class that is the only instance of the class.
+Public static method that returns the instance of the class, this is the global access point for the outer world to get the instance of the singleton class.
+
+Different approaches to singleton pattern implementation
+1. Eager initialization
+    In eager initialization, the instance of the singleton class is created at the time of class loading. The drawback to eager initialization is that the method is created even though the client application might not be using it
+    If your singleton class is not using a lot of resources, this is the approach to use. But in most of the scenarios, singleton classes are created for resources such as File System, Database connections, etc. We should avoid the instantiation unless the client calls the getInstance method. Also, this method doesn’t provide any options for exception handling.
+2. Static block initialization
+  Static block initialization implementation is similar to eager initialization, except that instance of the class is created in the static block that provides the option for exception handling.
+  Both eager initialization and static block initialization create the instance even before it’s being used and that is not the best practice to use.
+3. Lazy Initialization
+    Lazy initialization method to implement the singleton pattern creates the instance in the global access method.
+    The Lazy Initialization implementation works fine in the case of the single-threaded environment, but when it comes to multi-threaded systems, it can cause issues if multiple threads are inside the if condition at the same time. It will destroy the singleton pattern and both threads will get different instances of the singleton class.
+4. Thread Safe Singleton
+    A simple way to create a thread-safe singleton class is to make the global access method synchronized so that only one thread can execute this method at a time.
+    The synchronized implementation works fine and provides thread-safety, but it reduces the performance because of the cost associated with the synchronized method, although we need it only for the first few threads that might create separate instances. To avoid this extra overhead every time, double-checked locking principle is used. In this approach, the synchronized block is used inside the if condition with an additional check to ensure that only one instance of a singleton class is created.
+5. Bill Pugh Singleton Implementation
+    Prior to Java 5, the Java memory model had a lot of issues, and the previous approaches used to fail in certain scenarios where too many threads tried to get the instance of the singleton class simultaneously. So Bill Pugh came up with a different approach to create the singleton class using an inner static helper class.
+
+
+Using Reflection to destroy Singleton Pattern :
+    Reflection can be used to destroy all the previous singleton implementation approaches
+
+ 6. Enum Singleton
+    To overcome this situation with Reflection, Joshua Bloch suggests the use of enum to implement the singleton design pattern as Java ensures that any enum value is instantiated only once in a Java program. Since Java Enum values are globally accessible, so is the singleton. The drawback is that the enum type is somewhat inflexible (for example, it does not allow lazy initialization).
+
+Serialization and Singleton
+    Sometimes in distributed systems, we need to implement Serializable interface in the singleton class so that we can store its state in the file system and retrieve it at a later point in time.
+    The problem with serialized singleton class is that whenever we deserialize it, it will create a new instance of the class.
+    So it destroys the singleton pattern. To overcome this scenario, all we need to do is provide the implementation of readResolve() method.
